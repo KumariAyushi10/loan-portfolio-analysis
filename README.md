@@ -1,5 +1,5 @@
 # loan-portfolio-analysis
-A SQL-based analysis of a public loan dataset — exploring portfolio composition, default risk by state, borrower profiling, and reusable stored procedures for on-demand reporting.
+A SQL-based analysis of a public loan dataset - exploring portfolio composition, default risk by state, borrower profiling, and reusable stored procedures for on-demand reporting.
 
 ## Overview
 
@@ -12,7 +12,7 @@ highest debt-to-income ratio.
 
 | Tool | Purpose |
 |------|---------|
-| MySQL / MySQL Workbench | All querying — staging, cleaning, EDA, risk analysis, stored procedures, views, window functions |
+| MySQL / MySQL Workbench | All querying - staging, cleaning, EDA, risk analysis, stored procedures, views, window functions |
 
 ## Dataset
 
@@ -30,9 +30,9 @@ loan-portfolio-analysis/
 ├── README.md
 ├── LICENSE
 └── sql/
-    ├── create_and_load.sql          <- Step 1: staging table + raw CSV import
-    ├── build_clean_loans_table.sql  <- Step 2: cleans & types the data into `loans`
-    └── loan_portfolio_analysis.sql  <- Step 3: the actual analysis (EDA, risk, procedures, views)
+    ├── create_and_load.sql         
+    ├── build_clean_loans_table.sql 
+    └── loan_portfolio_analysis.sql
 \```
 
 ## Getting Started
@@ -52,19 +52,19 @@ The raw Lending Club CSV has 140+ columns, many irrelevant to this analysis, and
 several fields (like `int_rate`) stored as text with a `%` sign, plus blank values
 in numeric columns that break naive type casting. To handle this reliably:
 
-1. **Stage everything as text** into a `raw_loans` table — nothing can fail on a
+1. **Stage everything as text** into a `raw_loans` table - nothing can fail on a
    type mismatch if every column accepts any string.
-2. **Cast and clean** into a proper `loans` table — numeric columns converted with
+2. **Cast and clean** into a proper `loans` table - numeric columns converted with
    `NULLIF(..., '')` guards so blanks become real `NULL`s instead of crashing the
    conversion, and `int_rate` has its `%` stripped before casting to a decimal.
 
 ## What's in the Analysis Script
 
-- **Section 1 — Portfolio Overview:** totals, grade/purpose breakdowns, top states by loan volume
-- **Section 2 — Risk & Default Analysis:** default rate by state, a reusable `DefaultRateByState()` procedure, a ranked `state_risk_ranking` view using `DENSE_RANK()`
-- **Section 3 — Borrower Profiling:** income by home ownership, verified vs non-verified comparison, monthly installment trends, a `LoanProfile()` lookup procedure
-- **Section 4 — One-Call State Dashboard:** a single `StateDashboard()` procedure returning four result sets (KPIs, grade mix, top purposes, status mix) for any state
+- **Section 1 - Portfolio Overview:** totals, grade/purpose breakdowns, top states by loan volume
+- **Section 2 - Risk & Default Analysis:** default rate by state, a reusable `DefaultRateByState()` procedure, a ranked `state_risk_ranking` view using `DENSE_RANK()`
+- **Section 3 - Borrower Profiling:** income by home ownership, verified vs non-verified comparison, monthly installment trends, a `LoanProfile()` lookup procedure
+- **Section 4 - One-Call State Dashboard:** a single `StateDashboard()` procedure returning four result sets (KPIs, grade mix, top purposes, status mix) for any state
 
 ## Author
 **Kumari Ayushi**
-Data Analyst in training — SQL
+Data Analyst in training - SQL
