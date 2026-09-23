@@ -1,70 +1,53 @@
 # loan-portfolio-analysis
-A SQL-based analysis of a public loan dataset - exploring portfolio composition, default risk by state, borrower profiling, and reusable stored procedures for on-demand reporting.
+
+A SQL-based data analysis project evaluating credit risk, portfolio composition, and borrower profiles using a public lending dataset. This repository features advanced MySQL implementations, including window functions, views, and reusable stored procedures for financial reporting.
 
 ## Overview
 
-This project answers a set of business questions about a lending portfolio using
-MySQL: what does the portfolio look like, which states/grades carry the most risk,
-how do verified vs non-verified borrowers compare, and which borrowers carry the
-highest debt-to-income ratio.
+This project uses MySQL to explore structural portfolio risk patterns, borrower behavior distributions, and geographic metrics to support risk-management assessments.
 
-## Tools Used
+## Business Questions Answered
 
-| Tool | Purpose |
-|------|---------|
-| MySQL / MySQL Workbench | All querying - staging, cleaning, EDA, risk analysis, stored procedures, views, window functions |
+* **Portfolio Metrics:** What does the global lending portfolio composition look like when broken down by loan grade and purpose?
+* **Risk Hotspots:** Which specific states and credit grades carry the highest concentration of default risks?
+* **Verification Impact:** How do the default rates and loan volumes of verified borrowers compare against non-verified borrowers?
+* **Debt Profiling:** Which consumer profiles present the highest debt-to-income (DTI) ratios and financial stress signals?
+* **State Performance:** How can operational stakeholders pull a comprehensive financial health dashboard (KPIs, status mix, purposes) for any single state on demand?
 
-## Dataset
+## Tools & Dataset
 
-- **Source:** [Lending Club Loan Data](https://www.kaggle.com/datasets) (public Kaggle dataset)
-- **Table used:** `loans` (built from the raw CSV — see "How the data was prepared" below)
-- **Key fields:** loan_id, borrower_id, loan_amount, funded_amount, interest_rate, installment, grade, sub_grade, emp_title, emp_length, home_ownership, annual_income, verification_status, issue_date, status, purpose, state, debt_to_income
-
-> Download the dataset from Kaggle yourself and load it into your own MySQL schema —
-> see "Getting Started" below.
+* **SQL Engine:** MySQL & MySQL Workbench (used for staging, pipeline transformations, EDA, and stored procedure creation).
+* **Dataset Source:** Lending Club Loan Data (Kaggle), monitoring essential metrics such as `loan_amount`, `interest_rate`, `verification_status`, and `debt_to_income`.
 
 ## Project Structure
 
-\```
-loan-portfolio-analysis/
-├── README.md
-├── LICENSE
-└── sql/
-    ├── create_and_load.sql         
-    ├── build_clean_loans_table.sql 
-    └── loan_portfolio_analysis.sql
-\```
+```text
+├── sql/
+│   ├── create_and_load.sql          
+│   ├── build_clean_loans_table.sql  
+│   └── loan_portfolio_analysis.sql  
+├── LICENSE                          
+└── README.md                        
+```
+
+## Analytical Highlights
+
+* **Staging & ETL Pipeline:** Implements a text-staging layer to parse messy raw inputs safely, applying `NULLIF()` filters and trimming mechanisms before type-casting numeric and decimal columns.
+* **Advanced Querying:** Employs `DENSE_RANK()` window functions within custom views to calculate dynamic geographic risk indices across state lines.
+* **On-Demand Reporting:** Features a custom `StateDashboard()` procedure that outputs a complete, single-call metrics summary (KPIs, grade mixes, and loan statuses) for any queried state.
 
 ## Getting Started
 
-1. Install MySQL Server + MySQL Workbench.
+1. Clone or download the repository to your local machine.
 2. Download the Lending Club dataset from Kaggle.
-3. Create a schema called `loan_analysis` in Workbench.
-4. Run `sql/create_and_load.sql` to stage and load the raw CSV as text (avoids
-   type-mismatch import errors on messy real-world data).
-5. Run `sql/build_clean_loans_table.sql` to convert the staged data into a clean,
-   properly-typed `loans` table.
-6. Run `sql/loan_portfolio_analysis.sql` section by section to explore the data.
+3. Open MySQL Workbench, connect to your local server instance, and set up your workspace environment:
+   ```sql
+   CREATE DATABASE loan_analysis;
+   USE loan_analysis;
+   ```
+4. Run the scripts inside the `sql/` directory sequentially:
+   * First, execute `create_and_load.sql` to stage your raw data.
+   * Next, run `build_clean_loans_table.sql` to generate your sanitized analytics tables.
+   * Finally, open `loan_portfolio_analysis.sql` to run the individual core analytics sections and dashboard procedures.
 
-## How the Data Was Prepared
 
-The raw Lending Club CSV has 140+ columns, many irrelevant to this analysis, and
-several fields (like `int_rate`) stored as text with a `%` sign, plus blank values
-in numeric columns that break naive type casting. To handle this reliably:
-
-1. **Stage everything as text** into a `raw_loans` table - nothing can fail on a
-   type mismatch if every column accepts any string.
-2. **Cast and clean** into a proper `loans` table - numeric columns converted with
-   `NULLIF(..., '')` guards so blanks become real `NULL`s instead of crashing the
-   conversion, and `int_rate` has its `%` stripped before casting to a decimal.
-
-## What's in the Analysis Script
-
-- **Section 1 - Portfolio Overview:** totals, grade/purpose breakdowns, top states by loan volume
-- **Section 2 - Risk & Default Analysis:** default rate by state, a reusable `DefaultRateByState()` procedure, a ranked `state_risk_ranking` view using `DENSE_RANK()`
-- **Section 3 - Borrower Profiling:** income by home ownership, verified vs non-verified comparison, monthly installment trends, a `LoanProfile()` lookup procedure
-- **Section 4 - One-Call State Dashboard:** a single `StateDashboard()` procedure returning four result sets (KPIs, grade mix, top purposes, status mix) for any state
-
-## Author
-**Kumari Ayushi**
-Data Analyst in training - SQL
