@@ -1,4 +1,3 @@
--- STEP A: staging table, everything as text so import can never fail on type
 DROP TABLE IF EXISTS loan_analysis.raw_loans;
 CREATE TABLE loan_analysis.raw_loans (
     `id` TEXT,
@@ -148,7 +147,7 @@ CREATE TABLE loan_analysis.raw_loans (
     `settlement_term` TEXT
 );
 
--- STEP B: load the CSV in. Adjust FIELDS TERMINATED BY if your file uses tabs instead of commas.
+
 LOAD DATA LOCAL INFILE 'C:/Users/ASUS/Downloads/loan_project/data/loan.csv'
 INTO TABLE loan_analysis.raw_loans
 FIELDS TERMINATED BY ','
